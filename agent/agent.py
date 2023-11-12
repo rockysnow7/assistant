@@ -63,7 +63,7 @@ class Agent:
         )
 
         return response.data[0].url
-    
+
     def __read_text(self, text: str, output_path: str) -> str:
         if os.path.exists(output_path):
             return "That path already exists, please choose a different path."
@@ -82,6 +82,15 @@ class Agent:
 
         return "Audio saved successfully."
 
+    def __save_file(self, content: str, output_path: str) -> str:
+        if os.path.exists(output_path):
+            return "That path already exists, please choose a different path."
+
+        pathlib.Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+        with open(output_path, "w+") as f:
+            f.write(content)
+        return "File saved successfully."
+
     def __process_function_call(self, name: str, args: dict[str, Any]) -> str:
         if name == "send_email":
             return self.__email_manager.send_email(**args)
@@ -89,6 +98,8 @@ class Agent:
             return self.__generate_image(**args)
         if name == "read_text":
             return self.__read_text(**args)
+        if name == "save_file":
+            return self.__save_file(**args)
 
     @retry(wait=wait_fixed(1))
     def __retrieve_run(self, run_id: str) -> Run | None:

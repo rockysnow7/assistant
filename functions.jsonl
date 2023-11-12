@@ -59,3 +59,22 @@
         "required": ["text", "output_path"]
     }
 }
+
+{
+    "name": "save_file",
+    "description": "Save a given string to a file on the user's computer.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "content": {
+                "type": "string",
+                "description": "The content of the file."
+            },
+            "output_path": {
+                "type": "string",
+                "description": "The path on the user's computer to save the file to. Choose an appropriate file name."
+            }
+        },
+        "required": ["content", "output_path"]
+    }
+}
