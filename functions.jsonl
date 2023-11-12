@@ -1,0 +1,42 @@
+{
+    "name": "send_email",
+    "description": "Send an email to a given email address.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "recipient": {
+                "type": "string",
+                "description": "The email address of the intended recipient of the email to be sent."
+            },
+            "subject": {
+                "type": "string",
+                "description": "The subject of the email to be sent."
+            },
+            "body": {
+                "type": "string",
+                "description": "The body content of the email to be sent."
+            }
+        },
+        "required": ["recipient", "subject", "body"]
+    }
+}
+
+{
+    "name": "generate_image",
+    "description": "Generate an image using DALL-E 3 given a prompt. Returns the url of the image, which should be sent to the user directly, with no other comment.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "prompt": {
+                "type": "string",
+                "description": "A detailed description of the image to be generated."
+            },
+            "style": {
+                "type": "string",
+                "enum": ["vivid", "natural"],
+                "description": "The style of the image to be generated. 'Vivid' causes the model to lean towards generating hyper-real and dramatic images. 'Natural' causes the model to produce more natural, less hyper-real looking images."
+            }
+        },
+        "required": ["prompt", "style"]
+    }
+}
