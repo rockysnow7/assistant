@@ -3,17 +3,20 @@ from agent.openai_client import openai_client
 from dotenv import load_dotenv
 from openai.types.beta.threads.run import Run
 from tenacity import retry, wait_fixed
+from typing import Any
 
 import json
 import os
+import pathlib
 
 
 load_dotenv()
 
 
 DEFAULT_CONFIG = {
-    "thread_id": "", # openai thread id
     "email_address": "feyles@icloud.com",
+    "thread_id": "", # openai thread id
+    "voice": "nova",
 }
 
 
@@ -60,12 +63,32 @@ class Agent:
         )
 
         return response.data[0].url
+    
+    def __read_text(self, text: str, output_path: str) -> str:
+        if os.path.exists(output_path):
+            return "That path already exists, please choose a different path."
 
-    def __process_function_call(self, name: str, args: dict) -> str:
+        with open("config.json", "r") as f:
+            config = json.load(f)
+
+        response = openai_client.audio.speech.create(
+            model="tts-1-hd",
+            voice=config["voice"],
+            input=text,
+        )
+        pathlib.Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+        open(output_path, "w+").close()
+        response.stream_to_file(output_path)
+
+        return "Audio saved successfully."
+
+    def __process_function_call(self, name: str, args: dict[str, Any]) -> str:
         if name == "send_email":
             return self.__email_manager.send_email(**args)
         if name == "generate_image":
             return self.__generate_image(**args)
+        if name == "read_text":
+            return self.__read_text(**args)
 
     @retry(wait=wait_fixed(1))
     def __retrieve_run(self, run_id: str) -> Run | None:
@@ -86,7 +109,7 @@ class Agent:
             tool_outputs = []
             for call in calls:
                 name = call.function.name
-                print(f"{call.function.arguments=}")
+                print(f"{call.function.name=}, {call.function.arguments=}")
                 args = call.function.arguments
                 if args[-2:] == "}}": # sometimes openai returns json with an extra }, idk why but i wish they'd stop x
                     args = args[:-1]
