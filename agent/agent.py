@@ -111,10 +111,10 @@ class Agent:
             raise Exception
         return run
 
-    def __process_run(self, run: Run) -> str:
+    def __process_run(self, run: Run) -> Run:
         if run.status == "completed":
             return run
-        
+
         if run.status == "requires_action":
             calls = run.required_action.submit_tool_outputs.tool_calls
             tool_outputs = []
