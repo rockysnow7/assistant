@@ -27,8 +27,9 @@ class DiscordBot:
                 return
 
             response = self.__agent.get_response(message.content)
-
-            await message.channel.send(response)
+            parts = [response[i:i+2000] for i in range(0, len(response), 2000)]
+            for part in parts:
+                await message.channel.send(part)
 
     def run(self) -> None:
         self.__client.run(os.getenv("DISCORD_BOT_TOKEN"))
